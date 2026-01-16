@@ -2,8 +2,6 @@ import React, { useState, useEffect } from "react";
 import "./App.css";
 
 /* --- 1. DATABASE KATA RAKSASA (SAMPEL BESAR) --- */
-/* Untuk performa, saya masukkan sekitar 100+ pasangan unik yang di-shuffle. 
-   Ini sudah cukup untuk dimainkan berjam-jam tanpa pengulangan. */
 const RAW_WORDS = [
   ["Pantai", "Pulau"], ["Gunung", "Bukit"], ["Sekolah", "Kampus"], ["Gitar", "Bass"],
   ["Sendok", "Garpu"], ["Sepatu", "Sandal"], ["Nasi Goreng", "Mie Goreng"], ["Pizza", "Burger"],
@@ -48,7 +46,6 @@ const playSound = (type) => {
     gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
     osc.start(); osc.stop(now + 0.1);
   } else if (type === "scan") {
-    // Efek scanning futuristik
     osc.type = "sawtooth"; 
     osc.frequency.setValueAtTime(100, now);
     osc.frequency.linearRampToValueAtTime(1000, now + 0.5);
@@ -56,7 +53,6 @@ const playSound = (type) => {
     gain.gain.linearRampToValueAtTime(0, now + 0.5);
     osc.start(); osc.stop(now + 0.5);
   } else if (type === "glitch") {
-    // Efek glitch untuk Mr. White
     osc.type = "square";
     osc.frequency.setValueAtTime(50, now);
     osc.frequency.linearRampToValueAtTime(200, now + 0.1);
@@ -77,7 +73,6 @@ export default function App() {
   const [step, setStep] = useState("setup");
   const [players, setPlayers] = useState([]);
   const [name, setName] = useState("");
-  // Config Default
   const [rolesCfg, setRolesCfg] = useState({ under: 1, white: 1 });
   
   const [gameData, setGameData] = useState([]);
@@ -91,6 +86,15 @@ export default function App() {
   const [eliminated, setEliminated] = useState(null);
   const [winner, setWinner] = useState(null);
   const [whiteGuess, setWhiteGuess] = useState("");
+
+  // Load Leaderboard (Supaya tidak error di Vercel jika kosong)
+  const [leaderboard, setLeaderboard] = useState({});
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("undercover_stats");
+      if (saved) setLeaderboard(JSON.parse(saved));
+    } catch(e) {}
+  }, []);
 
   // Timer Logic
   useEffect(() => {
@@ -112,9 +116,7 @@ export default function App() {
   const startGame = () => {
     if (players.length < (rolesCfg.under + rolesCfg.white + 1)) return alert("Pemain kurang!");
     
-    // Ambil kata acak dari database raksasa
     const randomPair = RAW_WORDS[Math.floor(Math.random() * RAW_WORDS.length)];
-    // Randomize siapa jadi civilian word, siapa undercover word
     const isFlip = Math.random() > 0.5;
     const civWord = isFlip ? randomPair[0] : randomPair[1];
     const undWord = isFlip ? randomPair[1] : randomPair[0];
@@ -124,7 +126,6 @@ export default function App() {
     for(let i=0; i<rolesCfg.white; i++) pool.push({r:"Mr. White", w:null});
     while(pool.length < players.length) pool.push({r:"Civilian", w:civWord});
     
-    // Shuffle Roles
     pool.sort(() => Math.random() - 0.5);
     
     setGameData(players.map((p, i) => ({ 
@@ -138,7 +139,7 @@ export default function App() {
   // --- LOGIC DISTRIBUSI KARTU (GRID SYSTEM) ---
   const openCard = (player) => {
     setViewingPlayer(player);
-    setIsRevealing(false); // Reset state reveal
+    setIsRevealing(false); 
     playSound("click");
   };
 
@@ -146,7 +147,7 @@ export default function App() {
     setIsRevealing(true);
     if (viewingPlayer.role === "Mr. White") {
       playSound("glitch");
-      vibrate([50, 50, 50, 50, 200]); // Getar Glitch
+      vibrate([50, 50, 50, 50, 200]); 
     } else {
       playSound("scan");
       vibrate(100);
@@ -194,6 +195,15 @@ export default function App() {
     setWinner(winRole);
     setStep("end");
     playSound("win");
+    const newLB = { ...leaderboard };
+    gameData.forEach(p => {
+      const isWin = (winRole === "Civilian" && p.role === "Civilian") ||
+                    (winRole === "Impostor" && p.role !== "Civilian") ||
+                    (winRole === "Mr. White" && p.role === "Mr. White");
+      if (isWin) newLB[p.name] = (newLB[p.name] || 0) + 1;
+    });
+    setLeaderboard(newLB);
+    localStorage.setItem("undercover_stats", JSON.stringify(newLB));
   };
 
   return (
@@ -274,7 +284,6 @@ export default function App() {
             ) : (
               <div className={`scanner-result ${viewingPlayer.role === 'Mr. White' ? 'glitch-border' : ''}`}>
                 
-                {/* LOGIC PENYEMBUNYIAN ROLE */}
                 {viewingPlayer.role === "Mr. White" ? (
                   <div className="result-content white-mode">
                     <h1 className="glitch-text" data-text="MR. WHITE">MR. WHITE</h1>
@@ -285,7 +294,6 @@ export default function App() {
                   <div className="result-content">
                     <p className="label">KATA KUNCI ANDA:</p>
                     <h1 className="secret-word">{viewingPlayer.word}</h1>
-                    {/* HANYA TAMPILKAN KATA. JANGAN KASIH TAU DIA CIVILIAN ATAU UNDERCOVER */}
                     <div className="warning-box">
                       ⚠️ Jangan ucapkan kata ini secara langsung.
                     </div>
@@ -309,7 +317,8 @@ export default function App() {
               <button key={p.id} disabled={p.dead} className={`vote-item ${p.dead ? 'dead' : ''}`} onClick={() => eliminate(p.id)}>
                 <div className="avt">{p.name[0]}</div>
                 <span>{p.name}</span>
-                {p.dead && 💀}
+                {/* FIX: Emoji harus dalam tanda kutip string */}
+                {p.dead && "💀"}
               </button>
             ))}
           </div>
