@@ -60,178 +60,170 @@ export default function App() {
   const [currentPlayerIdx, setCurrentPlayerIdx] = useState(0);
   const [isWordVisible, setIsWordVisible] = useState(false);
   const [winner, setWinner] = useState(null);
-  const [mrWhiteGuess, setMrWhiteGuess] = useState("");
   const [eliminatedInfo, setEliminatedInfo] = useState(null);
+  const [mrWhiteGuess, setMrWhiteGuess] = useState("");
+  const [leaderboard, setLeaderboard] = useState({});
+
+  // LOAD LEADERBOARD DARI LOCAL STORAGE
+  useEffect(() => {
+    const savedStats = localStorage.getItem("undercover_stats");
+    if (savedStats) setLeaderboard(JSON.parse(savedStats));
+  }, []);
+
+  // SISTEM SUARA (WEB AUDIO)
+  const playSfx = (type) => {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+
+    if (type === "ding") { // Suara saat kartu dibuka
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(880, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
+      osc.start(); osc.stop(ctx.currentTime + 0.2);
+    } else if (type === "tick") { // Suara voting
+      osc.type = "square";
+      osc.frequency.setValueAtTime(150, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.05);
+      osc.start(); osc.stop(ctx.currentTime + 0.05);
+    } else if (type === "boom") { // Suara eliminasi
+      osc.type = "sawtooth";
+      osc.frequency.setValueAtTime(100, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(40, ctx.currentTime + 0.5);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+      osc.start(); osc.stop(ctx.currentTime + 0.5);
+    }
+  };
+
+  // HAPTIC FEEDBACK
+  const vibrate = (pattern) => {
+    if (navigator.vibrate) navigator.vibrate(pattern);
+  };
+
+  const updateStats = (winningRole) => {
+    const newStats = { ...leaderboard };
+    gameData.forEach(p => {
+      if (!newStats[p.name]) newStats[p.name] = 0;
+      // Jika role-nya cocok dengan pemenang, tambah poin
+      if (p.role.includes(winningRole) || (winningRole === "Impostor" && (p.role === "Undercover" || p.role === "Mr. White"))) {
+        newStats[p.name] += 1;
+      }
+    });
+    setLeaderboard(newStats);
+    localStorage.setItem("undercover_stats", JSON.stringify(newStats));
+  };
 
   const addPlayer = () => {
-    if (name.trim() && players.length < 15) {
+    if (name.trim()) {
       setPlayers([...players, { id: Date.now(), name: name.trim() }]);
       setName("");
+      playSfx("ding");
     }
   };
 
   const startGame = () => {
-    if (players.length < (countUndercover + countMrWhite + 1)) {
-      alert("Pemain kurang! Tambahkan pemain atau kurangi role jahat.");
-      return;
-    }
-
     const pair = WORD_PAIRS[Math.floor(Math.random() * WORD_PAIRS.length)];
     let rolesPool = [];
-
     for (let i = 0; i < countUndercover; i++) rolesPool.push({ role: "Undercover", word: pair.undercover });
     for (let i = 0; i < countMrWhite; i++) rolesPool.push({ role: "Mr. White", word: "???" });
-    
-    const civilianCount = players.length - rolesPool.length;
-    for (let i = 0; i < civilianCount; i++) rolesPool.push({ role: "Civilian", word: pair.civilian });
+    const civCount = players.length - rolesPool.length;
+    for (let i = 0; i < civCount; i++) rolesPool.push({ role: "Civilian", word: pair.civilian });
 
-    rolesPool = rolesPool.sort(() => Math.random() - 0.5);
-
-    const data = players.map((p, index) => ({
-      ...p,
-      ...rolesPool[index],
-      eliminated: false
-    }));
-
-    setGameData(data);
-    setCurrentPlayerIdx(0);
-    setIsWordVisible(false);
-    setWinner(null);
+    const shuffled = rolesPool.sort(() => Math.random() - 0.5);
+    setGameData(players.map((p, i) => ({ ...p, ...shuffled[i], eliminated: false })));
     setStep("distribute");
+    setCurrentPlayerIdx(0);
   };
 
   const handleEliminate = (id) => {
+    playSfx("boom");
+    vibrate([200, 100, 200]);
     const updated = gameData.map(p => p.id === id ? { ...p, eliminated: true } : p);
-    const target = updated.find(p => p.id === id);
+    setEliminatedInfo(updated.find(p => p.id === id));
     setGameData(updated);
-    setEliminatedInfo(target);
-    if (window.navigator.vibrate) window.navigator.vibrate(200);
   };
 
-  const closeEliminatedModal = () => {
-    const role = eliminatedInfo.role;
-    setEliminatedInfo(null);
-
-    // Jika Mr. White yang keluar, dia diberi kesempatan tebak dulu
-    if (role === "Mr. White") {
-      setStep("mrwhite_guess");
-    } else {
-      checkWinner(gameData);
-    }
-  };
-
-  const handleMrWhiteGuess = () => {
-    const civWord = gameData.find(p => p.role === "Civilian").word;
-    
-    if (mrWhiteGuess.toLowerCase() === civWord.toLowerCase()) {
-      // Jika tebakan BENAR, Mr. White langsung menang
-      setWinner("Mr. White Menang! 😈 (Tebakan Benar)");
-      setStep("end");
-    } else {
-      // Jika tebakan SALAH, game lanjut untuk cari impostor sisa
-      alert("Tebakan Mr. White SALAH! Game berlanjut...");
-      setMrWhiteGuess("");
-      setStep("voting");
-      checkWinner(gameData);
-    }
-  };
-
-  const checkWinner = (currentData) => {
-    const active = currentData.filter(p => !p.eliminated);
-    const impostors = active.filter(p => p.role === "Undercover" || p.role === "Mr. White");
-    
-    if (impostors.length === 0) {
-      setWinner("Civilian Menang! 🎉");
-      setStep("end");
-    } else if (active.length <= 2) {
-      // Jika sisa 2 orang dan masih ada impostor, impostor menang
-      setWinner("Impostor Menang! 😈");
-      setStep("end");
-    }
-  };
-
-  // Fungsi main lagi tanpa hapus pemain
-  const playAgain = () => {
-    setWinner(null);
-    setGameData([]);
-    setStep("setup");
+  const finalizeWinner = (roleName) => {
+    setWinner(roleName);
+    updateStats(roleName);
+    setStep("end");
   };
 
   return (
     <div className="container">
-      {/* 1. SETUP */}
       {step === "setup" && (
         <div className="glass-card">
           <h1 className="title">🕵️ Undercover</h1>
+          
           <div className="input-box">
-            <input 
-              value={name} 
-              onChange={(e) => setName(e.target.value)} 
-              placeholder="Nama Player..." 
-              onKeyPress={(e) => e.key === 'Enter' && addPlayer()}
-            />
-            <button onClick={addPlayer} className="btn-add">+</button>
+            <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Nama Player..." />
+            <button className="btn-add" onClick={addPlayer}>+</button>
           </div>
+
           <div className="player-grid">
-            {players.map(p => (
-              <div key={p.id} className="player-tag">
-                {p.name} 
-                <span onClick={() => setPlayers(players.filter(pl => pl.id !== p.id))} style={{marginLeft: '8px', color: '#ef4444'}}>×</span>
-              </div>
-            ))}
+            {players.map(p => <div key={p.id} className="player-tag">{p.name}</div>)}
           </div>
+
           <div className="role-settings">
-             <div className="role-control">
-                <span>😈 Undercover</span>
-                <div className="counter">
-                  <button onClick={() => setCountUndercover(Math.max(1, countUndercover - 1))}>-</button>
-                  <span className="count-val">{countUndercover}</span>
-                  <button onClick={() => setCountUndercover(countUndercover + 1)}>+</button>
-                </div>
-             </div>
-             <div className="role-control">
-                <span>⚪ Mr. White</span>
-                <div className="counter">
-                  <button onClick={() => setCountMrWhite(Math.max(0, countMrWhite - 1))}>-</button>
-                  <span className="count-val">{countMrWhite}</span>
-                  <button onClick={() => setCountMrWhite(countMrWhite + 1)}>+</button>
-                </div>
-             </div>
+            <div className="role-control">
+              <span>😈 Undercover: {countUndercover}</span>
+              <div className="counter">
+                <button onClick={() => setCountUndercover(Math.max(1, countUndercover - 1))}>-</button>
+                <button onClick={() => setCountUndercover(countUndercover + 1)}>+</button>
+              </div>
+            </div>
+            <div className="role-control">
+              <span>⚪ Mr. White: {countMrWhite}</span>
+              <div className="counter">
+                <button onClick={() => setCountMrWhite(Math.max(0, countMrWhite - 1))}>-</button>
+                <button onClick={() => setCountMrWhite(countMrWhite + 1)}>+</button>
+              </div>
+            </div>
           </div>
+
+          {/* LEADERBOARD MINI */}
+          {Object.keys(leaderboard).length > 0 && (
+            <div className="leaderboard-section">
+              <h4>🏆 Sesi Leaderboard</h4>
+              {Object.entries(leaderboard).sort((a,b) => b[1] - a[1]).slice(0, 3).map(([n, s]) => (
+                <div key={n} className="lb-row"><span>{n}</span> <span>{s} Win</span></div>
+              ))}
+            </div>
+          )}
+
           {players.length >= 3 && <button className="btn-main" onClick={startGame}>Mulai Game</button>}
         </div>
       )}
 
-      {/* 2. DISTRIBUTE */}
       {step === "distribute" && (
         <div className="glass-card center">
-          <p>Oper HP ke:</p>
+          <p>Oper ke:</p>
           <h2 className="highlight">{gameData[currentPlayerIdx]?.name}</h2>
-          <div className={`secret-box ${isWordVisible ? "active" : ""}`} onClick={() => setIsWordVisible(!isWordVisible)}>
-            {isWordVisible ? <h3>{gameData[currentPlayerIdx]?.word}</h3> : <p>Tap untuk lihat kata</p>}
+          <div className={`secret-box ${isWordVisible ? "active" : ""}`} onClick={() => { 
+            setIsWordVisible(!isWordVisible); 
+            playSfx("ding");
+            if (!isWordVisible && (gameData[currentPlayerIdx].role !== "Civilian")) vibrate(400); // Getar panjang buat impostor
+          }}>
+            {isWordVisible ? <h3>{gameData[currentPlayerIdx]?.word}</h3> : <p>Tap Kartu</p>}
           </div>
           {isWordVisible && (
             <button className="btn-main" onClick={() => {
               setIsWordVisible(false);
+              vibrate(50); // Getar pendek tiap pindah
               if (currentPlayerIdx < gameData.length - 1) setCurrentPlayerIdx(c => c + 1);
               else setStep("voting");
-            }}>OK, Lanjut!</button>
+            }}>Lanjut</button>
           )}
         </div>
       )}
 
-      {/* 3. VOTING */}
       {step === "voting" && (
         <div className="glass-card">
-          <h2 className="center">🗳️ Siapa Undercover?</h2>
+          <h2 className="center">Siapa Pengkhianatnya?</h2>
           <div className="vote-grid">
             {gameData.map(p => (
-              <button 
-                key={p.id} 
-                disabled={p.eliminated} 
-                className={`vote-btn ${p.eliminated ? "dead" : ""}`} 
-                onClick={() => handleEliminate(p.id)}
-              >
+              <button key={p.id} disabled={p.eliminated} className={`vote-btn ${p.eliminated ? 'dead' : ''}`} onClick={() => { playSfx("tick"); handleEliminate(p.id); }}>
                 {p.name} {p.eliminated && "💀"}
               </button>
             ))}
@@ -239,41 +231,45 @@ export default function App() {
         </div>
       )}
 
-      {/* 4. MODAL ELIMINASI */}
       {eliminatedInfo && (
         <div className="modal-overlay">
           <div className="glass-card center modal-content">
-            <h3 style={{color: '#ef4444', margin: 0}}>TERELIMINASI</h3>
+            <h3>HASIL VOTING</h3>
             <h1 className="name-reveal">{eliminatedInfo.name}</h1>
-            <p>Perannya adalah:</p>
             <div className="role-badge">{eliminatedInfo.role}</div>
-            <button className="btn-main" onClick={closeEliminatedModal}>OK</button>
+            <button className="btn-main" onClick={() => {
+              const role = eliminatedInfo.role;
+              setEliminatedInfo(null);
+              if (role === "Mr. White") setStep("mrwhite_guess");
+              else {
+                const active = gameData.filter(p => !p.eliminated);
+                const imp = active.filter(p => p.role !== "Civilian");
+                if (imp.length === 0) finalizeWinner("Civilian");
+                else if (active.length <= 2) finalizeWinner("Impostor");
+              }
+            }}>Lanjut</button>
           </div>
         </div>
       )}
 
-      {/* 5. MR WHITE GUESS */}
       {step === "mrwhite_guess" && (
         <div className="glass-card center">
-          <h2>😈 Mr. White Menebak!</h2>
-          <p>Jika salah, game berlanjut...</p>
-          <input 
-            className="input-full" 
-            value={mrWhiteGuess}
-            onChange={(e) => setMrWhiteGuess(e.target.value)} 
-            placeholder="Ketik kata civilian..." 
-          />
-          <button className="btn-main" onClick={handleMrWhiteGuess}>Konfirmasi</button>
+          <h2>😈 Mr. White Guess!</h2>
+          <input className="input-full" onChange={(e) => setMrWhiteGuess(e.target.value)} placeholder="Tebak kata..." />
+          <button className="btn-main" onClick={() => {
+             const civWord = gameData.find(p => p.role === "Civilian").word;
+             if (mrWhiteGuess.toLowerCase() === civWord.toLowerCase()) finalizeWinner("Mr. White");
+             else setStep("voting");
+          }}>Konfirmasi Tebakan</button>
         </div>
       )}
 
-      {/* 6. END */}
       {step === "end" && (
         <div className="glass-card center">
-          <h1 className="title">GAME OVER</h1>
-          <h2 className="winner-text">{winner}</h2>
-          <button className="btn-main" onClick={playAgain}>Main Lagi (Nama Tetap)</button>
-          <button className="btn-main" style={{background: 'none', border: '1px solid var(--border)', marginTop: '10px'}} onClick={() => window.location.reload()}>Reset Semua</button>
+          <h1 className="title">🏆 SELESAI</h1>
+          <h2 className="winner-text">{winner} MENANG!</h2>
+          <button className="btn-main" onClick={() => setStep("setup")}>Main Lagi</button>
+          <button className="btn-secondary" onClick={() => { localStorage.clear(); setLeaderboard({}); }}>Reset Skor</button>
         </div>
       )}
     </div>
