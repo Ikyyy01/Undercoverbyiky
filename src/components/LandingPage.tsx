@@ -74,22 +74,24 @@ export function LandingPage({ onStart, onShowLeaderboard }: LandingPageProps) {
           transition={{ delay: 0.4 }}
           className="mb-3 sm:mb-4"
         >
-          <h1 
-            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl neon-text mb-2 sm:mb-3 text-center px-2" 
-            style={{ 
-              fontFamily: 'Orbitron', 
-              fontWeight: 900, 
-              fontStyle: 'normal',
-              letterSpacing: '0.1em'
-            }}
-          >
-            UNDERCOVER
-          </h1>
+          <div className="flex justify-center items-center">
+            <h1 
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl neon-text mb-2 sm:mb-3 text-center" 
+              style={{ 
+                fontFamily: 'Orbitron', 
+                fontWeight: 900, 
+                fontStyle: 'normal',
+                letterSpacing: '0.05em' // Reduced letter spacing
+              }}
+            >
+              UNDERCOVER
+            </h1>
+          </div>
           
           {/* Decorative line */}
           <div className="flex items-center justify-center gap-2 sm:gap-3 mb-2 sm:mb-3">
             <div className="h-0.5 sm:h-1 w-8 sm:w-12 md:w-20 bg-gradient-to-r from-transparent via-primary to-primary" style={{ boxShadow: '0 0 10px rgba(14, 165, 233, 0.8)' }} />
-            <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 md:w-6 md:h-6 text-primary animate-pulse" />
+            <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 md:w-6 md:h-6 text-primary animate-pulse flex-shrink-0" />
             <div className="h-0.5 sm:h-1 w-8 sm:w-12 md:w-20 bg-gradient-to-l from-transparent via-primary to-primary" style={{ boxShadow: '0 0 10px rgba(14, 165, 233, 0.8)' }} />
           </div>
         </motion.div>
