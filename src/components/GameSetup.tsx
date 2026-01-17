@@ -78,35 +78,31 @@ export function GameSetup({ onComplete, onBack, savedNames }: GameSetupProps) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 sm:p-6 relative z-10">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="w-full max-w-2xl"
-      >
-        <Card className="neon-border bg-card/95 backdrop-blur-md p-6 sm:p-8 tech-corners rainbow-glow">
-          {/* Header */}
-          <div className="flex items-center mb-8">
-            <Button
-              variant="ghost"
-              onClick={() => {
-                playSound('click');
-                onBack();
-              }}
-              className="mr-4 -ml-2 text-primary hover:text-primary/80"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
-            <div className="flex items-center gap-3">
-              <div className="bg-primary/20 p-2 rounded-lg">
-                <Sparkles className="w-6 h-6 text-primary" />
-              </div>
-              <h2 className="text-3xl neon-text" style={{ fontFamily: 'Orbitron', letterSpacing: '0.1em' }}>
-                SETUP MISI
-              </h2>
-            </div>
-          </div>
+    <div className="min-h-screen p-3 sm:p-4 md:p-6 relative z-10">
+      <div className="max-w-3xl mx-auto">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-center justify-between mb-4 sm:mb-6"
+        >
+          <Button
+            variant="ghost"
+            onClick={() => { playSound('click'); onBack(); }}
+            className="text-primary hover:text-primary/80 hover:bg-primary/10"
+          >
+            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+            <span className="text-sm sm:text-base">Kembali</span>
+          </Button>
+          
+          <h2 className="text-xl sm:text-2xl md:text-3xl neon-text" style={{ fontFamily: 'Orbitron', letterSpacing: '0.1em' }}>
+            SETUP GAME
+          </h2>
+          
+          <div className="w-20 sm:w-24" /> {/* Spacer */}
+        </motion.div>
 
+        <Card className="neon-border bg-card/95 backdrop-blur-md p-6 sm:p-8 tech-corners rainbow-glow">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Quick Rematch Info */}
             {savedNames && savedNames.length > 0 && (
@@ -334,7 +330,7 @@ export function GameSetup({ onComplete, onBack, savedNames }: GameSetupProps) {
             )}
           </form>
         </Card>
-      </motion.div>
+      </div>
     </div>
   );
 }
