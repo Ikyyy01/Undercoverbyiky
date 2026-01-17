@@ -166,12 +166,12 @@ export function CardDistribution({ players, onPlayerSeen }: CardDistributionProp
               <motion.div
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-center mb-8"
+                className="text-center mb-6"
               >
-                <h2 className="text-5xl sm:text-6xl neon-text mb-3" style={{ fontFamily: 'Orbitron', letterSpacing: '0.1em' }}>
+                <h2 className="text-3xl sm:text-4xl md:text-5xl neon-text mb-2" style={{ fontFamily: 'Orbitron', letterSpacing: '0.1em' }}>
                   {viewingPlayer.name}
                 </h2>
-                <p className="text-muted-foreground text-lg" style={{ fontFamily: 'Rajdhani' }}>
+                <p className="text-muted-foreground text-sm sm:text-base" style={{ fontFamily: 'Rajdhani' }}>
                   {!isRevealing ? 'Siap melihat identitas anda?' : 'Identitas Terungkap'}
                 </p>
               </motion.div>
@@ -186,17 +186,17 @@ export function CardDistribution({ players, onPlayerSeen }: CardDistributionProp
                     transition={{ duration: 0.3 }}
                   >
                     <Card
-                      className="neon-border bg-card/50 backdrop-blur-md p-16 cursor-pointer hover:bg-card/70 transition-all tech-corners pulse-glow"
+                      className="neon-border bg-card/50 backdrop-blur-md p-8 sm:p-12 cursor-pointer hover:bg-card/70 transition-all tech-corners pulse-glow"
                       onClick={handleScan}
                     >
                       <div className="text-center">
-                        <div className="bg-primary/10 neon-border w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6">
-                          <EyeOff className="w-12 h-12 text-primary" strokeWidth={1.5} />
+                        <div className="bg-primary/10 neon-border w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                          <EyeOff className="w-8 h-8 sm:w-10 sm:h-10 text-primary" strokeWidth={1.5} />
                         </div>
-                        <h3 className="text-2xl neon-text mb-3" style={{ fontFamily: 'Orbitron', letterSpacing: '0.1em' }}>
+                        <h3 className="text-xl sm:text-2xl neon-text mb-2" style={{ fontFamily: 'Orbitron', letterSpacing: '0.1em' }}>
                           SENTUH UNTUK SCAN
                         </h3>
-                        <p className="text-muted-foreground text-sm" style={{ fontFamily: 'Rajdhani' }}>
+                        <p className="text-muted-foreground text-xs sm:text-sm" style={{ fontFamily: 'Rajdhani' }}>
                           Pastikan hanya anda yang melihat
                         </p>
                       </div>
@@ -209,14 +209,14 @@ export function CardDistribution({ players, onPlayerSeen }: CardDistributionProp
                     animate={{ rotateY: 0, opacity: 1 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <Card className={`bg-gradient-to-br ${getRoleColor(viewingPlayer.role)} border-0 p-12 shadow-2xl relative overflow-hidden`}>
+                    <Card className={`bg-gradient-to-br ${getRoleColor(viewingPlayer.role)} border-0 p-6 sm:p-8 md:p-10 shadow-2xl relative overflow-hidden`}>
                       {/* Scanning animation */}
                       {viewingPlayer.role === 'mrwhite' && !showWord && (
                         <div className="absolute inset-0 flex items-center justify-center bg-black/50">
                           <motion.div
                             animate={{ rotate: 360 }}
                             transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-                            className="w-20 h-20 border-4 border-white/20 border-t-white rounded-full"
+                            className="w-16 h-16 sm:w-20 sm:h-20 border-4 border-white/20 border-t-white rounded-full"
                           />
                         </div>
                       )}
@@ -228,23 +228,23 @@ export function CardDistribution({ players, onPlayerSeen }: CardDistributionProp
                             animate={{ opacity: 1, scale: 1 }}
                             className="text-center"
                           >
-                            <div className="bg-white/10 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <div className="bg-white/10 w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                               {viewingPlayer.role === 'mrwhite' ? (
-                                <Fingerprint className="w-10 h-10 text-white animate-pulse" />
+                                <Fingerprint className="w-7 h-7 sm:w-8 sm:h-8 text-white animate-pulse" />
                               ) : (
-                                <Eye className="w-10 h-10 text-white" />
+                                <Eye className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
                               )}
                             </div>
 
                             <h3
-                              className={`text-4xl text-white mb-3 ${viewingPlayer.role === 'mrwhite' ? 'glitch' : ''}`}
+                              className={`text-2xl sm:text-3xl text-white mb-2 ${viewingPlayer.role === 'mrwhite' ? 'glitch' : ''}`}
                               data-text={getRoleName(viewingPlayer.role)}
                               style={{ fontFamily: 'Orbitron', letterSpacing: '0.1em' }}
                             >
                               {getRoleName(viewingPlayer.role)}
                             </h3>
 
-                            <p className="text-white/90 mb-8 text-sm" style={{ fontFamily: 'Rajdhani' }}>
+                            <p className="text-white/90 mb-6 text-xs sm:text-sm" style={{ fontFamily: 'Rajdhani' }}>
                               {getRoleDescription(viewingPlayer.role)}
                             </p>
 
@@ -253,13 +253,13 @@ export function CardDistribution({ players, onPlayerSeen }: CardDistributionProp
                                 initial={{ scale: 0.8, opacity: 0 }}
                                 animate={{ scale: 1, opacity: 1 }}
                                 transition={{ delay: 0.2 }}
-                                className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 mb-4"
+                                className="bg-white/20 backdrop-blur-sm rounded-2xl p-4 sm:p-5 mb-3"
                               >
-                                <div className="text-white/70 text-xs mb-2" style={{ fontFamily: 'Orbitron', letterSpacing: '0.2em' }}>
+                                <div className="text-white/70 text-[10px] sm:text-xs mb-2" style={{ fontFamily: 'Orbitron', letterSpacing: '0.2em' }}>
                                   KATA KUNCI ANDA
                                 </div>
                                 <div
-                                  className="text-5xl text-white break-words"
+                                  className="text-3xl sm:text-4xl md:text-5xl text-white break-words"
                                   style={{
                                     fontFamily: 'Orbitron',
                                     letterSpacing: '0.05em',
@@ -274,13 +274,13 @@ export function CardDistribution({ players, onPlayerSeen }: CardDistributionProp
                                 initial={{ scale: 0.8, opacity: 0 }}
                                 animate={{ scale: 1, opacity: 1 }}
                                 transition={{ delay: 0.2 }}
-                                className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 mb-4 border-2 border-white/30"
+                                className="bg-white/20 backdrop-blur-sm rounded-2xl p-4 sm:p-5 mb-3 border-2 border-white/30"
                               >
-                                <div className="text-white/70 text-xs mb-2" style={{ fontFamily: 'Orbitron', letterSpacing: '0.2em' }}>
+                                <div className="text-white/70 text-[10px] sm:text-xs mb-2" style={{ fontFamily: 'Orbitron', letterSpacing: '0.2em' }}>
                                   KATA KUNCI ANDA
                                 </div>
                                 <div
-                                  className="text-6xl text-white glitch"
+                                  className="text-4xl sm:text-5xl md:text-6xl text-white glitch"
                                   data-text="???"
                                   style={{ fontFamily: 'Orbitron' }}
                                 >
@@ -292,7 +292,7 @@ export function CardDistribution({ players, onPlayerSeen }: CardDistributionProp
                             <div
                               className={`${
                                 viewingPlayer.word ? 'bg-yellow-500/20 border-yellow-500/50' : 'bg-destructive/20 border-destructive/50'
-                              } border text-white p-3 rounded-lg text-xs`}
+                              } border text-white p-2 sm:p-3 rounded-lg text-[10px] sm:text-xs`}
                               style={{ fontFamily: 'Rajdhani' }}
                             >
                               {viewingPlayer.word
@@ -309,10 +309,10 @@ export function CardDistribution({ players, onPlayerSeen }: CardDistributionProp
 
               {/* Close Button */}
               {isRevealing && showWord && (
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="mt-6">
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="mt-4 sm:mt-6">
                   <Button
                     onClick={handleClose}
-                    className="w-full bg-card text-primary hover:bg-card/80 py-7 text-lg neon-border pulse-glow"
+                    className="w-full bg-card text-primary hover:bg-card/80 py-5 sm:py-6 text-base sm:text-lg neon-border pulse-glow"
                     style={{ fontFamily: 'Orbitron', letterSpacing: '0.15em', fontWeight: 700 }}
                   >
                     TUTUP AKSES
