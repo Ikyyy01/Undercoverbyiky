@@ -73,15 +73,15 @@ export function CardDistribution({ players, onPlayerSeen }: CardDistributionProp
     <>
       {/* Grid View */}
       {!viewingPlayer && (
-        <div className="min-h-screen flex items-center justify-center p-4 sm:p-6 relative z-10">
-          <div className="w-full max-w-4xl">
+        <div className="min-h-screen flex items-center justify-center p-3 sm:p-4 md:p-6 relative z-10 overflow-hidden">
+          <div className="w-full max-w-4xl px-2">
             {/* Progress */}
-            <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-              <div className="flex justify-between items-center mb-3">
-                <span className="text-muted-foreground text-sm" style={{ fontFamily: 'Orbitron', letterSpacing: '0.1em' }}>
+            <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-6 sm:mb-8">
+              <div className="flex justify-between items-center mb-2 sm:mb-3">
+                <span className="text-muted-foreground text-xs sm:text-sm" style={{ fontFamily: 'Orbitron', letterSpacing: '0.1em' }}>
                   IDENTIFIKASI DIRI
                 </span>
-                <span className="text-primary text-sm" style={{ fontFamily: 'Orbitron', letterSpacing: '0.1em' }}>
+                <span className="text-primary text-xs sm:text-sm" style={{ fontFamily: 'Orbitron', letterSpacing: '0.1em' }}>
                   {seenCount} / {players.length}
                 </span>
               </div>
@@ -97,17 +97,17 @@ export function CardDistribution({ players, onPlayerSeen }: CardDistributionProp
             </motion.div>
 
             {/* Title */}
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center mb-8">
-              <h2 className="text-4xl sm:text-5xl neon-text mb-3" style={{ fontFamily: 'Orbitron', letterSpacing: '0.1em' }}>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center mb-6 sm:mb-8 px-2">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl neon-text mb-2 sm:mb-3" style={{ fontFamily: 'Orbitron', letterSpacing: '0.1em' }}>
                 PILIH NAMA ANDA
               </h2>
-              <p className="text-muted-foreground text-lg" style={{ fontFamily: 'Rajdhani', letterSpacing: '0.05em' }}>
+              <p className="text-muted-foreground text-sm sm:text-base md:text-lg" style={{ fontFamily: 'Rajdhani', letterSpacing: '0.05em' }}>
                 Untuk mengambil data rahasia
               </p>
             </motion.div>
 
             {/* Grid of Players */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3 md:gap-4">
               <AnimatePresence>
                 {players.map((player, i) => (
                   <motion.div
@@ -119,26 +119,26 @@ export function CardDistribution({ players, onPlayerSeen }: CardDistributionProp
                     <Button
                       disabled={player.seen}
                       onClick={() => handleOpenCard(player)}
-                      className={`w-full h-24 ${
+                      className={`w-full h-20 sm:h-24 ${
                         player.seen
                           ? 'bg-card/30 border-border/30 text-muted-foreground cursor-not-allowed opacity-60'
                           : 'neon-border bg-card/50 hover:bg-card/70 text-primary pulse-glow'
-                      } backdrop-blur-md flex flex-col items-center justify-center gap-2 transition-all`}
+                      } backdrop-blur-md flex flex-col items-center justify-center gap-1 sm:gap-2 transition-all`}
                     >
                       {player.seen ? (
                         <>
-                          <Lock className="w-6 h-6" />
-                          <span className="text-xs line-through" style={{ fontFamily: 'Orbitron', letterSpacing: '0.05em' }}>
+                          <Lock className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
+                          <span className="text-[10px] sm:text-xs line-through truncate max-w-full px-1" style={{ fontFamily: 'Orbitron', letterSpacing: '0.05em' }}>
                             {player.name}
                           </span>
-                          <span className="text-[10px]" style={{ fontFamily: 'Rajdhani' }}>
+                          <span className="text-[8px] sm:text-[10px]" style={{ fontFamily: 'Rajdhani' }}>
                             DATA DIAMBIL
                           </span>
                         </>
                       ) : (
                         <>
-                          <EyeOff className="w-6 h-6" />
-                          <span className="text-sm" style={{ fontFamily: 'Orbitron', letterSpacing: '0.05em' }}>
+                          <EyeOff className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
+                          <span className="text-[10px] sm:text-xs md:text-sm truncate max-w-full px-1" style={{ fontFamily: 'Orbitron', letterSpacing: '0.05em' }}>
                             {player.name}
                           </span>
                         </>
