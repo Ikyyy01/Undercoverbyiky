@@ -78,8 +78,8 @@ export function GameSetup({ onComplete, onBack, savedNames }: GameSetupProps) {
   };
 
   return (
-    <div className="min-h-screen p-3 sm:p-4 md:p-6 relative z-10">
-      <div className="max-w-3xl mx-auto">
+    <div className="min-h-screen p-3 sm:p-4 md:p-6 relative z-10 overflow-hidden">
+      <div className="max-w-3xl mx-auto px-2">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -89,17 +89,17 @@ export function GameSetup({ onComplete, onBack, savedNames }: GameSetupProps) {
           <Button
             variant="ghost"
             onClick={() => { playSound('click'); onBack(); }}
-            className="text-primary hover:text-primary/80 hover:bg-primary/10"
+            className="text-primary hover:text-primary/80 hover:bg-primary/10 text-xs sm:text-sm"
           >
-            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-            <span className="text-sm sm:text-base">Kembali</span>
+            <ArrowLeft className="w-4 h-4 mr-1 sm:mr-2" />
+            <span>Kembali</span>
           </Button>
           
           <h2 className="text-xl sm:text-2xl md:text-3xl neon-text" style={{ fontFamily: 'Orbitron', letterSpacing: '0.1em' }}>
             SETUP GAME
           </h2>
           
-          <div className="w-20 sm:w-24" /> {/* Spacer */}
+          <div className="w-16 sm:w-20 md:w-24" /> {/* Spacer */}
         </motion.div>
 
         <Card className="neon-border bg-card/95 backdrop-blur-md p-6 sm:p-8 tech-corners rainbow-glow">
