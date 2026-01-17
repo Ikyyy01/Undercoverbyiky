@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { Badge } from './ui/badge';
-import { Users, Vote, Skull, Shield, Eye, AlertCircle, Timer } from 'lucide-react';
+import { Users, Vote, Skull, Shield, Eye, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import type { Player } from '../App';
 import { playSound, vibrate } from '../App';
@@ -13,24 +13,8 @@ interface GamePlayProps {
 }
 
 export function GamePlay({ players, onEliminate }: GamePlayProps) {
-  const [timer, setTimer] = useState(60);
-  const [isTimerRunning, setIsTimerRunning] = useState(true);
-
   const alivePlayers = players.filter((p) => !p.dead);
   const deadPlayers = players.filter((p) => p.dead);
-
-  // Timer logic
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (isTimerRunning && timer > 0) {
-      interval = setInterval(() => setTimer((t) => t - 1), 1000);
-    } else if (timer === 0) {
-      setIsTimerRunning(false);
-      vibrate([500, 500]);
-      playSound('glitch');
-    }
-    return () => clearInterval(interval);
-  }, [isTimerRunning, timer]);
 
   const handleEliminate = (playerId: number) => {
     playSound('click');
@@ -38,31 +22,14 @@ export function GamePlay({ players, onEliminate }: GamePlayProps) {
   };
 
   return (
-    <div className="min-h-screen p-4 sm:p-6 relative z-10">
-      <div className="max-w-6xl mx-auto">
-        {/* Header with Timer */}
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8">
-          {/* Timer */}
-          <div className="mb-6">
-            <div
-              className={`text-7xl sm:text-8xl ${timer < 10 ? 'text-destructive' : 'neon-text'} mb-2`}
-              style={{
-                fontFamily: 'Orbitron',
-                textShadow: timer < 10 ? '0 0 20px rgba(239, 68, 68, 0.8)' : undefined,
-              }}
-            >
-              {timer}
-            </div>
-            <div className="flex items-center justify-center gap-2 text-muted-foreground">
-              <Timer className="w-4 h-4" />
-              <span style={{ fontFamily: 'Orbitron', letterSpacing: '0.1em', fontSize: '0.9rem' }}>WAKTU DISKUSI</span>
-            </div>
-          </div>
-
-          <h2 className="text-4xl sm:text-5xl neon-text mb-3" style={{ fontFamily: 'Orbitron', letterSpacing: '0.1em' }}>
+    <div className="min-h-screen p-3 sm:p-4 md:p-6 relative z-10 overflow-hidden">
+      <div className="max-w-6xl mx-auto px-2">
+        {/* Header */}
+        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-6 sm:mb-8">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl neon-text mb-2 sm:mb-3" style={{ fontFamily: 'Orbitron', letterSpacing: '0.1em' }}>
             FASE ELIMINASI
           </h2>
-          <p className="text-muted-foreground text-lg" style={{ fontFamily: 'Rajdhani', letterSpacing: '0.05em' }}>
+          <p className="text-muted-foreground text-sm sm:text-base md:text-lg" style={{ fontFamily: 'Rajdhani', letterSpacing: '0.05em' }}>
             Diskusi, deduksi, dan vote penyusup
           </p>
         </motion.div>
