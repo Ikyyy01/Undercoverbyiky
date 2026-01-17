@@ -236,17 +236,22 @@ export function CardDistribution({ players, onPlayerSeen }: CardDistributionProp
                               )}
                             </div>
 
-                            <h3
-                              className={`text-2xl sm:text-3xl text-white mb-2 ${viewingPlayer.role === 'mrwhite' ? 'glitch' : ''}`}
-                              data-text={getRoleName(viewingPlayer.role)}
-                              style={{ fontFamily: 'Orbitron', letterSpacing: '0.1em' }}
-                            >
-                              {getRoleName(viewingPlayer.role)}
-                            </h3>
+                            {/* Show role name ONLY for Mr. White */}
+                            {viewingPlayer.role === 'mrwhite' && (
+                              <>
+                                <h3
+                                  className="text-2xl sm:text-3xl text-white mb-2 glitch"
+                                  data-text="MR. WHITE"
+                                  style={{ fontFamily: 'Orbitron', letterSpacing: '0.1em' }}
+                                >
+                                  MR. WHITE
+                                </h3>
 
-                            <p className="text-white/90 mb-6 text-xs sm:text-sm" style={{ fontFamily: 'Rajdhani' }}>
-                              {getRoleDescription(viewingPlayer.role)}
-                            </p>
+                                <p className="text-white/90 mb-6 text-xs sm:text-sm" style={{ fontFamily: 'Rajdhani' }}>
+                                  {getRoleDescription(viewingPlayer.role)}
+                                </p>
+                              </>
+                            )}
 
                             {viewingPlayer.word ? (
                               <motion.div
