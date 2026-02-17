@@ -157,7 +157,7 @@ export function GamePlay({ players, onEliminate }: GamePlayProps) {
                         : player.role === 'undercover'
                         ? 'bg-orange-500/20 text-orange-300 border-orange-500/30'
                         : 'bg-gray-500/20 text-gray-300 border-gray-500/30'
-                    } border w-full justify-center py-2 mb-3`}
+                    } border w-full justify-center py-2`}
                     style={{ fontFamily: 'Orbitron', letterSpacing: '0.1em' }}
                   >
                     <span className="mr-2">
@@ -169,12 +169,6 @@ export function GamePlay({ players, onEliminate }: GamePlayProps) {
                     {player.role === 'undercover' && 'UNDERCOVER'}
                     {player.role === 'mrwhite' && 'MR. WHITE'}
                   </Badge>
-
-                  {player.word && (
-                    <div className="text-center text-muted-foreground text-sm" style={{ fontFamily: 'Rajdhani' }}>
-                      Kata: <span className="text-foreground" style={{ fontFamily: 'Orbitron' }}>{player.word}</span>
-                    </div>
-                  )}
                 </Card>
               ))}
             </div>
