@@ -1,4 +1,3 @@
-// components/GameSetup.tsx
 import React, { useState, useEffect } from 'react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -7,7 +6,6 @@ import { ArrowLeft, UserPlus, X, UserX, HelpCircle, Minus, Plus, RefreshCw, Spar
 import { motion, AnimatePresence } from 'motion/react';
 import type { GameConfig } from '../App';
 import { playSound } from '../App';
-import { PlayerCard } from './PlayerCard';
 
 interface GameSetupProps {
   onComplete: (config: GameConfig) => void;
@@ -19,23 +17,26 @@ export function GameSetup({ onComplete, onBack, savedNames }: GameSetupProps) {
   const [playerNames, setPlayerNames] = useState<string[]>([]);
   const [currentName, setCurrentName] = useState('');
   const [undercoverCount, setUndercoverCount] = useState(1);
-  const [mrWhiteCount, setMrWhiteCount] = useState(0);
+  const [mrWhiteCount, setMrWhiteCount] = useState(1);
   const [error, setError] = useState('');
-  const [cardsDistributed, setCardsDistributed] = useState(false);
-  const [players, setPlayers] = useState<any[]>([]); // role, isRevealed, isEliminated
+
+  // Load saved names on mount
+  useEffect(() => {
+    if (savedNames && savedNames.length > 0) {
+      setPlayerNames(savedNames);
+    }
+  }, [savedNames]);
 
   const civilianCount = playerNames.length - undercoverCount - mrWhiteCount;
 
-  useEffect(() => {
-    if (savedNames && savedNames.length > 0) setPlayerNames(savedNames);
-  }, [savedNames]);
-
   const addPlayer = () => {
     if (!currentName.trim()) return;
+    
     if (playerNames.includes(currentName.trim())) {
       setError('Nama sudah ada!');
       return;
     }
+
     setPlayerNames([...playerNames, currentName.trim()]);
     setCurrentName('');
     setError('');
@@ -47,8 +48,10 @@ export function GameSetup({ onComplete, onBack, savedNames }: GameSetupProps) {
     playSound('click');
   };
 
-  const distributeCards = () => {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
     setError('');
+
     if (playerNames.length < 3) {
       setError('Minimal 3 pemain diperlukan');
       return;
@@ -66,27 +69,12 @@ export function GameSetup({ onComplete, onBack, savedNames }: GameSetupProps) {
       return;
     }
 
-    // Generate roles acak
-    const roles: string[] = [
-      ...Array(undercoverCount).fill('undercover'),
-      ...Array(mrWhiteCount).fill('mrwhite'),
-      ...Array(civilianCount).fill('civilian'),
-    ].sort(() => Math.random() - 0.5);
-
-    const newPlayers = playerNames.map((name, i) => ({
-      name,
-      role: roles[i],
-      isRevealed: true, // semua kartu biru saat dibagikan
-      isEliminated: false,
-    }));
-    setPlayers(newPlayers);
-    setCardsDistributed(true);
     playSound('win');
-  };
-
-  const eliminatePlayer = (index: number) => {
-    setPlayers(players.map((p, i) => i === index ? { ...p, isEliminated: true } : p));
-    playSound('click');
+    onComplete({
+      playerNames,
+      undercoverCount,
+      mrWhiteCount,
+    });
   };
 
   return (
@@ -115,7 +103,7 @@ export function GameSetup({ onComplete, onBack, savedNames }: GameSetupProps) {
         </motion.div>
 
         <Card className="neon-border bg-card/95 backdrop-blur-md p-6 sm:p-8 tech-corners rainbow-glow">
-          <form onSubmit={(e) => e.preventDefault()} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             {/* Quick Rematch Info */}
             {savedNames && savedNames.length > 0 && (
               <motion.div
@@ -186,7 +174,7 @@ export function GameSetup({ onComplete, onBack, savedNames }: GameSetupProps) {
             )}
 
             {/* Role Configuration */}
-            {playerNames.length >= 3 && !cardsDistributed && (
+            {playerNames.length >= 3 && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -208,11 +196,31 @@ export function GameSetup({ onComplete, onBack, savedNames }: GameSetupProps) {
                     </label>
                   </div>
                   <div className="flex items-center gap-3">
-                    <Button type="button" variant="outline" size="sm" onClick={() => { setUndercoverCount(Math.max(1, undercoverCount - 1)); playSound('click'); }} className="w-10 h-10 p-0 neon-border hover:bg-primary/20">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setUndercoverCount(Math.max(1, undercoverCount - 1));
+                        playSound('click');
+                      }}
+                      className="w-10 h-10 p-0 neon-border hover:bg-primary/20"
+                    >
                       <Minus className="w-4 h-4" />
                     </Button>
-                    <span className="w-12 text-center text-3xl text-primary" style={{ fontFamily: 'Orbitron' }}>{undercoverCount}</span>
-                    <Button type="button" variant="outline" size="sm" onClick={() => { setUndercoverCount(Math.min(playerNames.length - 2, undercoverCount + 1)); playSound('click'); }} className="w-10 h-10 p-0 neon-border hover:bg-primary/20">
+                    <span className="w-12 text-center text-3xl text-primary" style={{ fontFamily: 'Orbitron' }}>
+                      {undercoverCount}
+                    </span>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setUndercoverCount(Math.min(playerNames.length - 2, undercoverCount + 1));
+                        playSound('click');
+                      }}
+                      className="w-10 h-10 p-0 neon-border hover:bg-primary/20"
+                    >
                       <Plus className="w-4 h-4" />
                     </Button>
                   </div>
@@ -229,13 +237,61 @@ export function GameSetup({ onComplete, onBack, savedNames }: GameSetupProps) {
                     </label>
                   </div>
                   <div className="flex items-center gap-3">
-                    <Button type="button" variant="outline" size="sm" onClick={() => { setMrWhiteCount(Math.max(0, mrWhiteCount - 1)); playSound('click'); }} className="w-10 h-10 p-0 neon-border hover:bg-primary/20">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setMrWhiteCount(Math.max(0, mrWhiteCount - 1));
+                        playSound('click');
+                      }}
+                      className="w-10 h-10 p-0 neon-border hover:bg-primary/20"
+                    >
                       <Minus className="w-4 h-4" />
                     </Button>
-                    <span className="w-12 text-center text-3xl text-primary" style={{ fontFamily: 'Orbitron' }}>{mrWhiteCount}</span>
-                    <Button type="button" variant="outline" size="sm" onClick={() => { setMrWhiteCount(Math.min(playerNames.length - 2, mrWhiteCount + 1)); playSound('click'); }} className="w-10 h-10 p-0 neon-border hover:bg-primary/20">
+                    <span className="w-12 text-center text-3xl text-primary" style={{ fontFamily: 'Orbitron' }}>
+                      {mrWhiteCount}
+                    </span>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setMrWhiteCount(Math.min(playerNames.length - 2, mrWhiteCount + 1));
+                        playSound('click');
+                      }}
+                      className="w-10 h-10 p-0 neon-border hover:bg-primary/20"
+                    >
                       <Plus className="w-4 h-4" />
                     </Button>
+                  </div>
+                </div>
+
+                {/* Role Summary */}
+                <div className="grid grid-cols-3 gap-3 pt-4 border-t border-border">
+                  <div className="text-center bg-blue-500/10 rounded-lg p-3 neon-border">
+                    <div className="text-4xl text-blue-400 mb-1" style={{ fontFamily: 'Orbitron' }}>
+                      {civilianCount}
+                    </div>
+                    <div className="text-xs text-muted-foreground" style={{ fontFamily: 'Orbitron', letterSpacing: '0.05em' }}>
+                      CIVILIAN
+                    </div>
+                  </div>
+                  <div className="text-center bg-orange-500/10 rounded-lg p-3 neon-border">
+                    <div className="text-4xl text-orange-400 mb-1" style={{ fontFamily: 'Orbitron' }}>
+                      {undercoverCount}
+                    </div>
+                    <div className="text-xs text-muted-foreground" style={{ fontFamily: 'Orbitron', letterSpacing: '0.05em' }}>
+                      UNDERCOVER
+                    </div>
+                  </div>
+                  <div className="text-center bg-gray-500/10 rounded-lg p-3 neon-border">
+                    <div className="text-4xl text-foreground mb-1" style={{ fontFamily: 'Orbitron' }}>
+                      {mrWhiteCount}
+                    </div>
+                    <div className="text-xs text-muted-foreground" style={{ fontFamily: 'Orbitron', letterSpacing: '0.05em' }}>
+                      MR. WHITE
+                    </div>
                   </div>
                 </div>
               </motion.div>
@@ -248,7 +304,7 @@ export function GameSetup({ onComplete, onBack, savedNames }: GameSetupProps) {
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="bg-destructive/10 border border-destructive p-4 rounded-lg text-sm text-center"
+                  className="bg-destructive/10 border border-destructive text-destructive p-4 rounded-lg text-sm text-center"
                   style={{ fontFamily: 'Orbitron', letterSpacing: '0.05em' }}
                 >
                   {error}
@@ -256,33 +312,21 @@ export function GameSetup({ onComplete, onBack, savedNames }: GameSetupProps) {
               )}
             </AnimatePresence>
 
-            {/* Distribute Cards */}
-            {playerNames.length >= 3 && !cardsDistributed && (
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+            {/* Submit Button */}
+            {playerNames.length >= 3 && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
                 <Button
-                  type="button"
-                  onClick={distributeCards}
-                  className="w-full py-7 text-lg bg-primary hover:bg-primary/90 pulse-glow flex justify-center items-center gap-2"
+                  type="submit"
+                  className="w-full py-7 text-lg bg-primary hover:bg-primary/90 pulse-glow"
                   style={{ fontFamily: 'Orbitron', letterSpacing: '0.2em', fontWeight: 900 }}
                 >
-                  <Sparkles className="w-5 h-5 mr-2" /> DISTRIBUSI KARTU
+                  <Sparkles className="w-5 h-5 mr-2" />
+                  DISTRIBUSI KARTU
                 </Button>
               </motion.div>
-            )}
-
-            {/* Players Grid */}
-            {cardsDistributed && (
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-4">
-                {players.map((p, i) => (
-                  <div key={i} onClick={() => !p.isEliminated && eliminatePlayer(i)}>
-                    <PlayerCard
-                      role={p.role}
-                      isRevealed={p.isRevealed}
-                      isEliminated={p.isEliminated}
-                    />
-                  </div>
-                ))}
-              </div>
             )}
           </form>
         </Card>
@@ -290,4 +334,3 @@ export function GameSetup({ onComplete, onBack, savedNames }: GameSetupProps) {
     </div>
   );
 }
-
