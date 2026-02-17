@@ -209,7 +209,7 @@ export function CardDistribution({ players, onPlayerSeen }: CardDistributionProp
                     animate={{ rotateY: 0, opacity: 1 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <Card className={`bg-gradient-to-br ${getRoleColor(viewingPlayer.role)} border-0 p-6 sm:p-8 md:p-10 shadow-2xl relative overflow-hidden`}>
+                    <Card className="bg-gradient-to-br from-blue-600 to-cyan-600 border-0 p-6 sm:p-8 md:p-10 shadow-2xl relative overflow-hidden">
                       {/* Scanning animation */}
                       {viewingPlayer.role === 'mrwhite' && !showWord && (
                         <div className="absolute inset-0 flex items-center justify-center bg-black/50">
