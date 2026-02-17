@@ -102,32 +102,11 @@ export function EliminationResult({ player, onConfirm }: EliminationResultProps)
 
               {/* Role Badge */}
               <Badge
-                className="bg-white/20 text-white border-white/30 border mb-6 px-6 py-2 text-lg"
+                className="bg-white/20 text-white border-white/30 border px-6 py-2 text-lg"
                 style={{ fontFamily: 'Orbitron', letterSpacing: '0.1em' }}
               >
                 {getRoleName()}
               </Badge>
-
-              {/* Word */}
-              {player.word ? (
-                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
-                  <div className="text-white/70 text-xs mb-2" style={{ fontFamily: 'Orbitron', letterSpacing: '0.2em' }}>
-                    KATA RAHASIA
-                  </div>
-                  <div className="text-3xl text-white" style={{ fontFamily: 'Orbitron' }}>
-                    {player.word}
-                  </div>
-                </div>
-              ) : (
-                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
-                  <div className="text-white/70 text-xs mb-2" style={{ fontFamily: 'Orbitron', letterSpacing: '0.2em' }}>
-                    KATA RAHASIA
-                  </div>
-                  <div className="text-3xl text-white glitch" data-text="???" style={{ fontFamily: 'Orbitron' }}>
-                    ???
-                  </div>
-                </div>
-              )}
             </div>
           </Card>
         </motion.div>
