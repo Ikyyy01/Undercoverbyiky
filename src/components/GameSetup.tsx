@@ -77,6 +77,68 @@ export function GameSetup({ onComplete, onBack, savedNames }: GameSetupProps) {
     });
   };
 
+  /** Reusable role counter row — mobile-safe layout */
+  const RoleCounter = ({
+    icon: Icon,
+    label,
+    iconBg,
+    iconColor,
+    count,
+    onDecrease,
+    onIncrease,
+  }: {
+    icon: React.ElementType;
+    label: string;
+    iconBg: string;
+    iconColor: string;
+    count: number;
+    onDecrease: () => void;
+    onIncrease: () => void;
+  }) => (
+    <div className="flex items-center gap-2 sm:gap-3">
+      {/* Icon */}
+      <div className={`${iconBg} p-2 rounded-lg flex-shrink-0`}>
+        <Icon className={`w-4 h-4 ${iconColor}`} />
+      </div>
+
+      {/* Label — diberi min-w-0 + truncate agar tidak meluap */}
+      <label
+        className="flex-1 min-w-0 truncate text-foreground text-xs sm:text-sm"
+        style={{ fontFamily: 'Orbitron', letterSpacing: '0.04em' }}
+      >
+        {label}
+      </label>
+
+      {/* Counter controls — flex-shrink-0 agar tidak tercompress */}
+      <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={onDecrease}
+          className="w-8 h-8 sm:w-10 sm:h-10 p-0 neon-border hover:bg-primary/20"
+        >
+          <Minus className="w-3 h-3 sm:w-4 sm:h-4" />
+        </Button>
+        <span
+          className="w-8 sm:w-12 text-center text-2xl sm:text-3xl text-primary"
+          style={{ fontFamily: 'Orbitron' }}
+        >
+          {count}
+        </span>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={onIncrease}
+          className="w-8 h-8 sm:w-10 sm:h-10 p-0 neon-border hover:bg-primary/20"
+        >
+          <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
+        </Button>
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen p-3 sm:p-4 md:p-6 relative z-10 overflow-hidden">
       <div className="max-w-3xl mx-auto px-2">
@@ -111,7 +173,7 @@ export function GameSetup({ onComplete, onBack, savedNames }: GameSetupProps) {
                 animate={{ opacity: 1, y: 0 }}
                 className="bg-primary/10 neon-border rounded-lg p-4 flex items-center gap-3"
               >
-                <RefreshCw className="w-5 h-5 text-primary" />
+                <RefreshCw className="w-5 h-5 text-primary flex-shrink-0" />
                 <p className="text-sm text-primary" style={{ fontFamily: 'Rajdhani' }}>
                   Nama pemain dari game sebelumnya dimuat otomatis!
                 </p>
@@ -152,7 +214,7 @@ export function GameSetup({ onComplete, onBack, savedNames }: GameSetupProps) {
                 </label>
                 <div className="flex flex-wrap gap-2">
                   <AnimatePresence>
-                    {playerNames.map((name, i) => (
+                    {playerNames.map((name) => (
                       <motion.div
                         key={name}
                         initial={{ opacity: 0, scale: 0.8 }}
@@ -178,118 +240,58 @@ export function GameSetup({ onComplete, onBack, savedNames }: GameSetupProps) {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="neon-border bg-muted/30 rounded-xl p-6 space-y-4 tech-corners"
+                className="neon-border bg-muted/30 rounded-xl p-4 sm:p-6 space-y-4 tech-corners"
               >
-                <h3 className="text-lg neon-text mb-4 flex items-center gap-2" style={{ fontFamily: 'Orbitron', letterSpacing: '0.1em' }}>
-                  <HelpCircle className="w-5 h-5" />
+                <h3 className="text-base sm:text-lg neon-text mb-4 flex items-center gap-2" style={{ fontFamily: 'Orbitron', letterSpacing: '0.1em' }}>
+                  <HelpCircle className="w-5 h-5 flex-shrink-0" />
                   KONFIGURASI ROLE
                 </h3>
 
                 {/* Undercover Counter */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="bg-secondary/20 p-2 rounded-lg">
-                      <UserX className="w-5 h-5 text-secondary" />
-                    </div>
-                    <label className="text-foreground" style={{ fontFamily: 'Orbitron', letterSpacing: '0.05em' }}>
-                      UNDERCOVER
-                    </label>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        setUndercoverCount(Math.max(1, undercoverCount - 1));
-                        playSound('click');
-                      }}
-                      className="w-10 h-10 p-0 neon-border hover:bg-primary/20"
-                    >
-                      <Minus className="w-4 h-4" />
-                    </Button>
-                    <span className="w-12 text-center text-3xl text-primary" style={{ fontFamily: 'Orbitron' }}>
-                      {undercoverCount}
-                    </span>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        setUndercoverCount(Math.min(playerNames.length - 2, undercoverCount + 1));
-                        playSound('click');
-                      }}
-                      className="w-10 h-10 p-0 neon-border hover:bg-primary/20"
-                    >
-                      <Plus className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
+                <RoleCounter
+                  icon={UserX}
+                  label="UNDERCOVER"
+                  iconBg="bg-secondary/20"
+                  iconColor="text-secondary"
+                  count={undercoverCount}
+                  onDecrease={() => { setUndercoverCount(Math.max(1, undercoverCount - 1)); playSound('click'); }}
+                  onIncrease={() => { setUndercoverCount(Math.min(playerNames.length - 2, undercoverCount + 1)); playSound('click'); }}
+                />
 
                 {/* Mr. White Counter */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="bg-muted-foreground/20 p-2 rounded-lg">
-                      <HelpCircle className="w-5 h-5 text-foreground" />
-                    </div>
-                    <label className="text-foreground" style={{ fontFamily: 'Orbitron', letterSpacing: '0.05em' }}>
-                      MR. WHITE
-                    </label>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        setMrWhiteCount(Math.max(0, mrWhiteCount - 1));
-                        playSound('click');
-                      }}
-                      className="w-10 h-10 p-0 neon-border hover:bg-primary/20"
-                    >
-                      <Minus className="w-4 h-4" />
-                    </Button>
-                    <span className="w-12 text-center text-3xl text-primary" style={{ fontFamily: 'Orbitron' }}>
-                      {mrWhiteCount}
-                    </span>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        setMrWhiteCount(Math.min(playerNames.length - 2, mrWhiteCount + 1));
-                        playSound('click');
-                      }}
-                      className="w-10 h-10 p-0 neon-border hover:bg-primary/20"
-                    >
-                      <Plus className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
+                <RoleCounter
+                  icon={HelpCircle}
+                  label="MR. WHITE"
+                  iconBg="bg-muted-foreground/20"
+                  iconColor="text-foreground"
+                  count={mrWhiteCount}
+                  onDecrease={() => { setMrWhiteCount(Math.max(0, mrWhiteCount - 1)); playSound('click'); }}
+                  onIncrease={() => { setMrWhiteCount(Math.min(playerNames.length - 2, mrWhiteCount + 1)); playSound('click'); }}
+                />
 
                 {/* Role Summary */}
-                <div className="grid grid-cols-3 gap-3 pt-4 border-t border-border">
-                  <div className="text-center bg-blue-500/10 rounded-lg p-3 neon-border">
-                    <div className="text-4xl text-blue-400 mb-1" style={{ fontFamily: 'Orbitron' }}>
+                <div className="grid grid-cols-3 gap-2 sm:gap-3 pt-4 border-t border-border">
+                  <div className="text-center bg-blue-500/10 rounded-lg p-2 sm:p-3 neon-border">
+                    <div className="text-3xl sm:text-4xl text-blue-400 mb-1" style={{ fontFamily: 'Orbitron' }}>
                       {civilianCount}
                     </div>
-                    <div className="text-xs text-muted-foreground" style={{ fontFamily: 'Orbitron', letterSpacing: '0.05em' }}>
+                    <div className="text-[9px] sm:text-xs text-muted-foreground" style={{ fontFamily: 'Orbitron', letterSpacing: '0.04em' }}>
                       CIVILIAN
                     </div>
                   </div>
-                  <div className="text-center bg-orange-500/10 rounded-lg p-3 neon-border">
-                    <div className="text-4xl text-orange-400 mb-1" style={{ fontFamily: 'Orbitron' }}>
+                  <div className="text-center bg-orange-500/10 rounded-lg p-2 sm:p-3 neon-border">
+                    <div className="text-3xl sm:text-4xl text-orange-400 mb-1" style={{ fontFamily: 'Orbitron' }}>
                       {undercoverCount}
                     </div>
-                    <div className="text-xs text-muted-foreground" style={{ fontFamily: 'Orbitron', letterSpacing: '0.05em' }}>
+                    <div className="text-[9px] sm:text-xs text-muted-foreground" style={{ fontFamily: 'Orbitron', letterSpacing: '0.04em' }}>
                       UNDERCOVER
                     </div>
                   </div>
-                  <div className="text-center bg-gray-500/10 rounded-lg p-3 neon-border">
-                    <div className="text-4xl text-foreground mb-1" style={{ fontFamily: 'Orbitron' }}>
+                  <div className="text-center bg-gray-500/10 rounded-lg p-2 sm:p-3 neon-border">
+                    <div className="text-3xl sm:text-4xl text-foreground mb-1" style={{ fontFamily: 'Orbitron' }}>
                       {mrWhiteCount}
                     </div>
-                    <div className="text-xs text-muted-foreground" style={{ fontFamily: 'Orbitron', letterSpacing: '0.05em' }}>
+                    <div className="text-[9px] sm:text-xs text-muted-foreground" style={{ fontFamily: 'Orbitron', letterSpacing: '0.04em' }}>
                       MR. WHITE
                     </div>
                   </div>

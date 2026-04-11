@@ -57,6 +57,115 @@ const DEFAULT_WORDS: [string, string][] = [
   ["Air", "Api"], ["Tanah", "Udara"], ["Kayu", "Batu"],
   ["Uang", "Kartu Kredit"], ["Dompet", "Tas"], ["Kunci", "Gembok"],
   ["Gunting", "Pisau"], ["Kertas", "Plastik"], ["Botol", "Gelas"],
+
+  ["Keyboard", "Mouse"], ["Monitor", "Printer"], ["Router", "Modem"],
+  ["Server", "Client"], ["Database", "Spreadsheet"], ["HTML", "CSS"],
+  ["Python", "Java"], ["AI", "Machine Learning"], ["Cloud", "Server Lokal"],
+
+  ["Es Teh", "Es Jeruk"], ["Bakso", "Mie Ayam"], ["Rendang", "Semur"],
+  ["Ayam Goreng", "Ayam Bakar"], ["Sushi", "Ramen"], ["Dimsum", "Siomay"],
+
+  ["Hujan", "Gerimis"], ["Angin", "Badai"], ["Petir", "Guntur"],
+  ["Pagi", "Subuh"], ["Sore", "Senja"], ["Malam", "Dini Hari"],
+
+  ["Cepat", "Kilat"], ["Lambat", "Santai"], ["Besar", "Raksasa"],
+  ["Kecil", "Mini"], ["Pintar", "Cerdas"], ["Bodoh", "Lugu"],
+
+  ["Cinta", "Sayang"], ["Marah", "Kesal"], ["Takut", "Cemas"],
+  ["Senang", "Bahagia"], ["Sedih", "Murung"], ["Benci", "Muak"],
+
+  ["Kerja", "Karier"], ["Bisnis", "Startup"], ["Gaji", "Bonus"],
+  ["Investor", "Founder"], ["Marketing", "Sales"], ["HRD", "Recruiter"],
+
+  ["Film", "Series"], ["Drama", "Sitkom"], ["Horor", "Thriller"],
+  ["Action", "Adventure"], ["Komedi", "Parodi"], ["Anime", "Kartun"],
+
+  ["Login", "Register"], ["Username", "Email"], ["Password", "PIN"],
+  ["Download", "Streaming"], ["Upload", "Sharing"], ["Offline", "Online"],
+
+  ["Galaxy", "Universe"], ["Planet", "Bintang"], ["Meteor", "Asteroid"],
+  ["Orbit", "Rotasi"], ["Gravitasi", "Magnet"],
+
+  ["Ide", "Konsep"], ["Teori", "Hipotesis"], ["Data", "Informasi"],
+  ["Fakta", "Opini"], ["Analisis", "Evaluasi"], ["Strategi", "Taktik"],
+
+  ["Algoritma", "Program"], ["Syntax", "Semantik"], ["Compiler", "Interpreter"],
+  ["Framework", "Library"], ["Frontend", "Backend"], ["API", "Endpoint"],
+  ["Bug", "Error"], ["Debugging", "Testing"], ["Versioning", "Deployment"],
+
+  ["Data Mining", "Data Science"], ["Big Data", "Data Warehouse"],
+  ["OLTP", "OLAP"], ["Normalization", "Denormalization"],
+  ["Primary Key", "Foreign Key"], ["Index", "Query"],
+
+  ["Kecepatan", "Percepatan"], ["Jarak", "Perpindahan"],
+  ["Energi", "Daya"], ["Massa", "Berat"], ["Tekanan", "Gaya"],
+  ["Suhu", "Kalor"],
+
+  ["Logika", "Intuisi"], ["Deduksi", "Induksi"],
+  ["Abstrak", "Konkret"], ["Objektif", "Subjektif"],
+  ["Rasional", "Irasional"],
+
+  ["Etika", "Moral"], ["Hukum", "Aturan"],
+  ["Hak", "Kewajiban"], ["Adil", "Setara"],
+  ["Bebas", "Lepas"],
+
+  ["Strategi", "Perencanaan"], ["Eksekusi", "Implementasi"],
+  ["Evaluasi", "Monitoring"], ["Target", "Tujuan"],
+  ["Efisiensi", "Efektivitas"],
+
+  ["Produk", "Layanan"], ["Konsumen", "Pelanggan"],
+  ["Brand", "Merek"], ["Harga", "Nilai"],
+  ["Diskon", "Promo"],
+
+  ["Sadar", "Paham"], ["Ingat", "Hafal"],
+  ["Fokus", "Konsentrasi"], ["Belajar", "Latihan"],
+  ["Mengerti", "Memahami"],
+
+  ["Kuat", "Tangguh"], ["Lemah", "Rapuh"],
+  ["Tinggi", "Menjulang"], ["Rendah", "Pendek"],
+
+  ["Gelap", "Redup"], ["Terang", "Cerah"],
+  ["Bising", "Berisik"], ["Sunyi", "Sepi"],
+  ["Panas", "Hangat"], ["Dingin", "Sejuk"],
+
+  ["Langit", "Awan"], ["Hutan", "Rimba"],
+  ["Sungai", "Danau"], ["Laut", "Samudra"],
+  ["Padang", "Savana"],
+
+  ["SSD", "HDD"], ["RAM", "Cache"], ["GPU", "CPU"],
+
+  ["Shopee", "Tokopedia"], ["Lazada", "Blibli"],
+  ["OVO", "GoPay"], ["DANA", "LinkAja"],
+
+  ["YouTuber", "Streamer"], ["Influencer", "Content Creator"],
+  ["Subscriber", "Follower"], ["Like", "View"],
+
+  ["Hero", "Villain"], ["Protagonis", "Antagonis"],
+  ["Plot", "Storyline"], ["Ending", "Climax"],
+
+  ["Fingerprint", "Face ID"], ["Enkripsi", "Dekripsi"],
+  ["Firewall", "Antivirus"],
+
+  ["Nilai", "Skor"], ["Ranking", "Peringkat"],
+  ["Lulus", "Tuntas"], ["Ujian", "Tes"],
+
+  ["Kamera", "Lensa"], ["Foto", "Gambar"],
+  ["Video", "Rekaman"], ["Zoom", "Fokus"],
+
+  ["Headset", "Earphone"], ["Speaker", "Soundbar"],
+
+  ["Remote", "WFO"], ["WFH", "Hybrid"], ["Deadline", "Timeline"],
+
+  ["Bitcoin", "Ethereum"], ["Trading", "Investasi"],
+  ["Bullish", "Bearish"], ["Profit", "Loss"],
+
+  ["UI", "UX"], ["Wireframe", "Prototype"],
+  ["Design", "Layout"], ["Typography", "Font"],
+
+  ["Hosting", "Domain"], ["Bandwidth", "Latency"], ["Ping", "Throughput"],
+
+  ["Analogi", "Metafora"], ["Simbol", "Makna"],
+  ["Narasi", "Deskripsi"], ["Kesimpulan", "Ringkasan"],
 ];
 
 // AUDIO ENGINE
@@ -141,7 +250,6 @@ function AppInner() {
   const handleSetupComplete = (config: GameConfig) => {
     setLastGameConfig(config);
 
-    // Choose word pair based on current theme
     const wordPool = theme.wordPairs ?? DEFAULT_WORDS;
     const randomPair = wordPool[Math.floor(Math.random() * wordPool.length)];
     const isFlip = Math.random() > 0.5;
@@ -231,29 +339,19 @@ function AppInner() {
 
   return (
     <div className="min-h-screen cyber-bg" style={{ background: theme.background }}>
-      {/* Scanlines */}
       <div className="scanlines" />
-
-      {/* Dynamic grid with theme color */}
       <div
         className="cyber-grid"
         style={{
           backgroundImage: `linear-gradient(${theme.gridColor} 1px, transparent 1px), linear-gradient(90deg, ${theme.gridColor} 1px, transparent 1px)`,
         }}
       />
-
-      {/* Particles */}
       <div className="particles" />
 
-      {/* Theme selector - fixed top right */}
-      <div
-        className="fixed top-3 right-3 z-50"
-        style={{ top: 'env(safe-area-inset-top, 12px)' }}
-      >
+      <div className="fixed top-3 right-3 z-50">
         <ThemeSelector />
       </div>
 
-      {/* Pages */}
       {gamePhase === 'landing' && (
         <LandingPage onStart={startNewGame} onShowLeaderboard={() => setShowLeaderboard(true)} />
       )}
@@ -282,7 +380,6 @@ function AppInner() {
   );
 }
 
-// ── Root Export ───────────────────────────────────────────────────────────
 function App() {
   return (
     <ThemeProvider>

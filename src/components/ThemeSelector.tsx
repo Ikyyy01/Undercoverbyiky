@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useLayoutEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { Palette, Check, ChevronDown } from 'lucide-react';
 import { useTheme, THEMES, ThemeId } from '../context/ThemeContext';
@@ -7,17 +8,41 @@ import { playSound } from '../App';
 export function ThemeSelector() {
   const { theme, themeId, setTheme } = useTheme();
   const [open, setOpen] = useState(false);
-
+  const [rect, setRect] = useState<DOMRect | null>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const themeList = Object.values(THEMES);
 
+  useLayoutEffect(() => {
+    if (open && buttonRef.current) {
+      setRect(buttonRef.current.getBoundingClientRect());
+    }
+  }, [open]);
+
+  // Hitung posisi dropdown: selalu mepet kanan tombol, tidak keluar layar
+  const DROPDOWN_WIDTH = 220;
+  const dropdownLeft = rect
+    ? Math.min(
+        rect.right - DROPDOWN_WIDTH,          // rata kanan dengan tombol
+        window.innerWidth - DROPDOWN_WIDTH - 8 // jangan melebihi kanan layar
+      )
+    : 0;
+  const dropdownTop = rect ? rect.bottom + 8 : 0;
+  // Pastikan tidak keluar kiri layar
+  const safeLeft = Math.max(8, dropdownLeft);
+
   return (
-    <div className="relative">
-      {/* Trigger button */}
+    <>
+      {/* ── Tombol trigger ── */}
       <button
-        onClick={() => { setOpen(!open); playSound('click'); }}
-        className="flex items-center gap-2 px-3 py-2 rounded-lg border transition-all text-sm"
+        ref={buttonRef}
+        onClick={() => { setOpen(v => !v); playSound('click'); }}
         style={{
-          borderColor: theme.border,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 6,
+          padding: '6px 10px',
+          borderRadius: 8,
+          border: `1px solid ${theme.border}`,
           background: `${theme.card}cc`,
           color: theme.primary,
           backdropFilter: 'blur(8px)',
@@ -25,138 +50,137 @@ export function ThemeSelector() {
           boxShadow: `0 0 12px ${theme.glowColor}`,
           fontFamily: 'Orbitron',
           letterSpacing: '0.05em',
-          fontSize: '11px',
+          fontSize: 11,
+          cursor: 'pointer',
+          whiteSpace: 'nowrap',
         }}
       >
-        <Palette style={{ width: 14, height: 14 }} />
-        <span className="hidden sm:inline">{theme.emoji} {theme.name}</span>
-        <span className="sm:hidden">{theme.emoji}</span>
+        <Palette style={{ width: 13, height: 13, flexShrink: 0 }} />
+        <span>{theme.emoji} {theme.name}</span>
         <ChevronDown
           style={{
-            width: 12, height: 12,
-            transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
+            width: 11, height: 11, flexShrink: 0,
+            transform: open ? 'rotate(180deg)' : 'none',
             transition: 'transform 0.2s',
           }}
         />
       </button>
 
-      {/* Dropdown */}
-      <AnimatePresence>
-        {open && (
-          <>
-            {/* Backdrop */}
-            <div
-              className="fixed inset-0 z-40"
-              onClick={() => setOpen(false)}
-            />
-            <motion.div
-              initial={{ opacity: 0, y: -8, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -8, scale: 0.95 }}
-              transition={{ duration: 0.15 }}
-              className="absolute right-0 top-full mt-2 z-50 rounded-xl overflow-hidden"
-              style={{
-                background: `${theme.card}f0`,
-                border: `1px solid ${theme.border}`,
-                backdropFilter: 'blur(16px)',
-                WebkitBackdropFilter: 'blur(16px)',
-                boxShadow: `0 16px 48px rgba(0,0,0,0.5), 0 0 0 1px ${theme.border}`,
-                minWidth: 220,
-              }}
-            >
-              {/* Header */}
+      {/* ── Dropdown via portal ke body ── */}
+      {createPortal(
+        <AnimatePresence>
+          {open && (
+            <>
+              {/* Backdrop */}
               <div
-                className="px-4 py-3 border-b"
+                style={{ position: 'fixed', inset: 0, zIndex: 9998 }}
+                onClick={() => setOpen(false)}
+              />
+
+              {/* Panel */}
+              <motion.div
+                initial={{ opacity: 0, y: -6, scale: 0.97 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -6, scale: 0.97 }}
+                transition={{ duration: 0.14 }}
                 style={{
-                  borderColor: theme.border,
-                  background: `${theme.muted}80`,
+                  position: 'fixed',
+                  top: dropdownTop,
+                  left: safeLeft,
+                  width: DROPDOWN_WIDTH,
+                  zIndex: 9999,
+                  borderRadius: 12,
+                  overflow: 'hidden',
+                  background: `${theme.card}f5`,
+                  border: `1px solid ${theme.border}`,
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
+                  boxShadow: `0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px ${theme.border}`,
                 }}
               >
-                <div
-                  className="text-xs uppercase tracking-widest"
-                  style={{ color: theme.primary, fontFamily: 'Orbitron', letterSpacing: '0.15em' }}
-                >
-                  ✦ Pilih Tema
+                {/* Header */}
+                <div style={{
+                  padding: '10px 16px',
+                  borderBottom: `1px solid ${theme.border}`,
+                  background: `${theme.muted}90`,
+                }}>
+                  <span style={{
+                    color: theme.primary, fontFamily: 'Orbitron',
+                    fontSize: 10, letterSpacing: '0.15em', textTransform: 'uppercase',
+                  }}>
+                    ✦ Pilih Tema
+                  </span>
                 </div>
-              </div>
 
-              {/* Theme options */}
-              {themeList.map((t) => {
-                const isActive = t.id === themeId;
-                return (
-                  <button
-                    key={t.id}
-                    onClick={() => {
-                      setTheme(t.id as ThemeId);
-                      playSound('click');
-                      setOpen(false);
-                    }}
-                    className="w-full flex items-center gap-3 px-4 py-3 transition-all text-left"
-                    style={{
-                      background: isActive ? `${t.primary}18` : 'transparent',
-                      borderLeft: isActive ? `3px solid ${t.primary}` : '3px solid transparent',
-                    }}
-                    onMouseEnter={e => {
-                      if (!isActive) (e.currentTarget as HTMLElement).style.background = `${t.primary}0f`;
-                    }}
-                    onMouseLeave={e => {
-                      if (!isActive) (e.currentTarget as HTMLElement).style.background = 'transparent';
-                    }}
-                  >
-                    {/* Theme color dot */}
-                    <div
-                      className="w-8 h-8 rounded-lg flex items-center justify-center text-base flex-shrink-0"
+                {/* Theme list */}
+                {themeList.map((t) => {
+                  const isActive = t.id === themeId;
+                  return (
+                    <button
+                      key={t.id}
+                      onClick={() => { setTheme(t.id as ThemeId); playSound('click'); setOpen(false); }}
                       style={{
-                        background: `${t.primary}20`,
-                        border: `1px solid ${t.primary}40`,
-                        boxShadow: isActive ? `0 0 10px ${t.primary}60` : 'none',
+                        width: '100%', display: 'flex', alignItems: 'center', gap: 10,
+                        padding: '9px 14px', textAlign: 'left', cursor: 'pointer',
+                        transition: 'background 0.15s',
+                        background: isActive ? `${t.primary}18` : 'transparent',
+                        borderLeft: isActive ? `3px solid ${t.primary}` : '3px solid transparent',
+                      }}
+                      onMouseEnter={e => {
+                        if (!isActive) (e.currentTarget as HTMLElement).style.background = `${t.primary}12`;
+                      }}
+                      onMouseLeave={e => {
+                        if (!isActive) (e.currentTarget as HTMLElement).style.background = 'transparent';
                       }}
                     >
-                      {t.emoji}
-                    </div>
-
-                    <div className="flex-1 min-w-0">
-                      <div
-                        className="text-xs font-medium"
-                        style={{
+                      <div style={{
+                        width: 30, height: 30, borderRadius: 7, flexShrink: 0,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15,
+                        background: `${t.primary}20`, border: `1px solid ${t.primary}40`,
+                        boxShadow: isActive ? `0 0 10px ${t.primary}60` : 'none',
+                      }}>
+                        {t.emoji}
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{
                           color: isActive ? t.primary : '#f8fafc',
-                          fontFamily: 'Orbitron',
-                          letterSpacing: '0.05em',
-                        }}
-                      >
-                        {t.name}
+                          fontFamily: 'Orbitron', fontSize: 11, fontWeight: 600,
+                          letterSpacing: '0.05em', overflow: 'hidden',
+                          textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                        }}>
+                          {t.name}
+                        </div>
+                        <div style={{
+                          color: '#94a3b8', fontFamily: 'Rajdhani', fontSize: 11, marginTop: 1,
+                          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                        }}>
+                          {t.description}
+                        </div>
                       </div>
-                      <div
-                        className="text-xs truncate mt-0.5"
-                        style={{ color: '#94a3b8', fontFamily: 'Rajdhani' }}
-                      >
-                        {t.description}
-                      </div>
-                    </div>
+                      {isActive && (
+                        <Check style={{ width: 13, height: 13, color: t.primary, flexShrink: 0 }} />
+                      )}
+                    </button>
+                  );
+                })}
 
-                    {isActive && (
-                      <Check style={{ width: 14, height: 14, color: t.primary, flexShrink: 0 }} />
-                    )}
-                  </button>
-                );
-              })}
-
-              {/* Footer note */}
-              <div
-                className="px-4 py-2 border-t text-center"
-                style={{ borderColor: theme.border, background: `${theme.muted}40` }}
-              >
-                <span
-                  className="text-xs"
-                  style={{ color: '#64748b', fontFamily: 'Rajdhani' }}
-                >
-                  Kata akan berubah sesuai tema
-                </span>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
-    </div>
+                {/* Footer */}
+                <div style={{
+                  padding: '7px 16px',
+                  borderTop: `1px solid ${theme.border}`,
+                  background: `${theme.muted}40`,
+                  textAlign: 'center',
+                }}>
+                  <span style={{ color: '#64748b', fontFamily: 'Rajdhani', fontSize: 11 }}>
+                    Kata akan berubah sesuai tema
+                  </span>
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
+    </>
   );
 }
