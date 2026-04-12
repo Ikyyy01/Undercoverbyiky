@@ -1,21 +1,22 @@
 // ─────────────────────────────────────────────
 //  FIREBASE CONFIG
-//  Ganti nilai di bawah dengan config Firebase
-//  project kamu dari Firebase Console.
+//  Nilai diambil dari environment variables (.env)
+//  Salin .env.example ke .env lalu isi dengan
+//  config Firebase project kamu dari Firebase Console.
 //  https://console.firebase.google.com/
 // ─────────────────────────────────────────────
 import { initializeApp } from 'firebase/app';
 import { getDatabase } from 'firebase/database';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyD3X3CIEW7d1mDDswz2_77D6YSv_4kCVWA",
-  authDomain: "undercover-iky.firebaseapp.com",
-  databaseURL: "https://undercover-iky-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "undercover-iky",
-  storageBucket: "undercover-iky.firebasestorage.app",
-  messagingSenderId: "300955875447",
-  appId: "1:300955875447:web:3c0315c46c7804742cee72",
-  measurementId: "G-3FCN8N00LN"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
 const app = initializeApp(firebaseConfig);
