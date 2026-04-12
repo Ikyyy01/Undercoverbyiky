@@ -9,6 +9,10 @@ import { GameResults } from './components/GameResults';
 import { Leaderboard } from './components/Leaderboard';
 import { ThemeSelector } from './components/ThemeSelector';
 import { ThemeProvider, useTheme, THEMES } from './context/ThemeContext';
+import { OnlineLobbyEntry } from './components/online/OnlineLobbyEntry';
+import { OnlineRoomLobby } from './components/online/OnlineRoomLobby';
+import { OnlineGame } from './components/online/OnlineGame';
+import type { OnlineRoom } from './firebase/gameService';
 
 export type GamePhase = 'landing' | 'setup' | 'distribution' | 'gameplay' | 'elimination' | 'whiteguess' | 'results';
 
@@ -57,113 +61,50 @@ const DEFAULT_WORDS: [string, string][] = [
   ["Air", "Api"], ["Tanah", "Udara"], ["Kayu", "Batu"],
   ["Uang", "Kartu Kredit"], ["Dompet", "Tas"], ["Kunci", "Gembok"],
   ["Gunting", "Pisau"], ["Kertas", "Plastik"], ["Botol", "Gelas"],
-
   ["Keyboard", "Mouse"], ["Monitor", "Printer"], ["Router", "Modem"],
   ["Server", "Client"], ["Database", "Spreadsheet"], ["HTML", "CSS"],
   ["Python", "Java"], ["AI", "Machine Learning"], ["Cloud", "Server Lokal"],
-
   ["Es Teh", "Es Jeruk"], ["Bakso", "Mie Ayam"], ["Rendang", "Semur"],
   ["Ayam Goreng", "Ayam Bakar"], ["Sushi", "Ramen"], ["Dimsum", "Siomay"],
-
   ["Hujan", "Gerimis"], ["Angin", "Badai"], ["Petir", "Guntur"],
   ["Pagi", "Subuh"], ["Sore", "Senja"], ["Malam", "Dini Hari"],
-
   ["Cepat", "Kilat"], ["Lambat", "Santai"], ["Besar", "Raksasa"],
   ["Kecil", "Mini"], ["Pintar", "Cerdas"], ["Bodoh", "Lugu"],
-
   ["Cinta", "Sayang"], ["Marah", "Kesal"], ["Takut", "Cemas"],
   ["Senang", "Bahagia"], ["Sedih", "Murung"], ["Benci", "Muak"],
-
   ["Kerja", "Karier"], ["Bisnis", "Startup"], ["Gaji", "Bonus"],
   ["Investor", "Founder"], ["Marketing", "Sales"], ["HRD", "Recruiter"],
-
   ["Film", "Series"], ["Drama", "Sitkom"], ["Horor", "Thriller"],
   ["Action", "Adventure"], ["Komedi", "Parodi"], ["Anime", "Kartun"],
-
   ["Login", "Register"], ["Username", "Email"], ["Password", "PIN"],
   ["Download", "Streaming"], ["Upload", "Sharing"], ["Offline", "Online"],
-
   ["Galaxy", "Universe"], ["Planet", "Bintang"], ["Meteor", "Asteroid"],
   ["Orbit", "Rotasi"], ["Gravitasi", "Magnet"],
-
   ["Ide", "Konsep"], ["Teori", "Hipotesis"], ["Data", "Informasi"],
   ["Fakta", "Opini"], ["Analisis", "Evaluasi"], ["Strategi", "Taktik"],
-
   ["Algoritma", "Program"], ["Syntax", "Semantik"], ["Compiler", "Interpreter"],
   ["Framework", "Library"], ["Frontend", "Backend"], ["API", "Endpoint"],
   ["Bug", "Error"], ["Debugging", "Testing"], ["Versioning", "Deployment"],
-
-  ["Data Mining", "Data Science"], ["Big Data", "Data Warehouse"],
-  ["OLTP", "OLAP"], ["Normalization", "Denormalization"],
-  ["Primary Key", "Foreign Key"], ["Index", "Query"],
-
-  ["Kecepatan", "Percepatan"], ["Jarak", "Perpindahan"],
-  ["Energi", "Daya"], ["Massa", "Berat"], ["Tekanan", "Gaya"],
-  ["Suhu", "Kalor"],
-
-  ["Logika", "Intuisi"], ["Deduksi", "Induksi"],
-  ["Abstrak", "Konkret"], ["Objektif", "Subjektif"],
-  ["Rasional", "Irasional"],
-
-  ["Etika", "Moral"], ["Hukum", "Aturan"],
-  ["Hak", "Kewajiban"], ["Adil", "Setara"],
-  ["Bebas", "Lepas"],
-
-  ["Strategi", "Perencanaan"], ["Eksekusi", "Implementasi"],
-  ["Evaluasi", "Monitoring"], ["Target", "Tujuan"],
-  ["Efisiensi", "Efektivitas"],
-
-  ["Produk", "Layanan"], ["Konsumen", "Pelanggan"],
-  ["Brand", "Merek"], ["Harga", "Nilai"],
-  ["Diskon", "Promo"],
-
-  ["Sadar", "Paham"], ["Ingat", "Hafal"],
-  ["Fokus", "Konsentrasi"], ["Belajar", "Latihan"],
-  ["Mengerti", "Memahami"],
-
-  ["Kuat", "Tangguh"], ["Lemah", "Rapuh"],
-  ["Tinggi", "Menjulang"], ["Rendah", "Pendek"],
-
-  ["Gelap", "Redup"], ["Terang", "Cerah"],
-  ["Bising", "Berisik"], ["Sunyi", "Sepi"],
-  ["Panas", "Hangat"], ["Dingin", "Sejuk"],
-
-  ["Langit", "Awan"], ["Hutan", "Rimba"],
-  ["Sungai", "Danau"], ["Laut", "Samudra"],
-  ["Padang", "Savana"],
-
   ["SSD", "HDD"], ["RAM", "Cache"], ["GPU", "CPU"],
-
   ["Shopee", "Tokopedia"], ["Lazada", "Blibli"],
   ["OVO", "GoPay"], ["DANA", "LinkAja"],
-
   ["YouTuber", "Streamer"], ["Influencer", "Content Creator"],
   ["Subscriber", "Follower"], ["Like", "View"],
-
   ["Hero", "Villain"], ["Protagonis", "Antagonis"],
   ["Plot", "Storyline"], ["Ending", "Climax"],
-
   ["Fingerprint", "Face ID"], ["Enkripsi", "Dekripsi"],
   ["Firewall", "Antivirus"],
-
   ["Nilai", "Skor"], ["Ranking", "Peringkat"],
   ["Lulus", "Tuntas"], ["Ujian", "Tes"],
-
   ["Kamera", "Lensa"], ["Foto", "Gambar"],
   ["Video", "Rekaman"], ["Zoom", "Fokus"],
-
   ["Headset", "Earphone"], ["Speaker", "Soundbar"],
-
   ["Remote", "WFO"], ["WFH", "Hybrid"], ["Deadline", "Timeline"],
-
   ["Bitcoin", "Ethereum"], ["Trading", "Investasi"],
   ["Bullish", "Bearish"], ["Profit", "Loss"],
-
   ["UI", "UX"], ["Wireframe", "Prototype"],
   ["Design", "Layout"], ["Typography", "Font"],
-
   ["Hosting", "Domain"], ["Bandwidth", "Latency"], ["Ping", "Throughput"],
-
   ["Analogi", "Metafora"], ["Simbol", "Makna"],
   ["Narasi", "Deskripsi"], ["Kesimpulan", "Ringkasan"],
 ];
@@ -222,6 +163,12 @@ function AppInner() {
   const [lastGameConfig, setLastGameConfig] = useState<GameConfig | null>(null);
   const [leaderboard, setLeaderboard] = useState<Record<string, LeaderboardEntry>>({});
   const [showLeaderboard, setShowLeaderboard] = useState(false);
+
+  // ── Online state ──────────────────────────────────────────────────────
+  // Flow: off → lobby (pilih create/join) → roomlobby (tunggu pemain) → game
+  const [onlineMode, setOnlineMode] = useState<'off' | 'lobby' | 'roomlobby' | 'game'>('off');
+  const [onlineRoomCode, setOnlineRoomCode] = useState<string>('');
+  const [onlineIsHost, setOnlineIsHost] = useState<boolean>(false);
 
   useEffect(() => {
     try {
@@ -337,6 +284,77 @@ function AppInner() {
     saveLeaderboard(newLb);
   };
 
+  // ── Online handlers ───────────────────────────────────────────────────
+  const handleOnlineRoomReady = (roomCode: string, isHost: boolean) => {
+    setOnlineRoomCode(roomCode);
+    setOnlineIsHost(isHost);
+    setOnlineMode('roomlobby'); // ← masuk ke room lobby dulu, bukan langsung game
+  };
+
+  const handleOnlineLeave = () => {
+    setOnlineMode('off');
+    setOnlineRoomCode('');
+    setOnlineIsHost(false);
+    setGamePhase('landing');
+  };
+
+  const handleGameStarted = (_room: OnlineRoom) => {
+    setOnlineMode('game'); // ← host klik mulai → pindah ke game
+  };
+
+  // ── Shared background wrapper ─────────────────────────────────────────
+  const BgWrapper = ({ children }: { children: React.ReactNode }) => (
+    <div className="min-h-screen cyber-bg" style={{ background: theme.background }}>
+      <div className="scanlines" />
+      <div className="cyber-grid" style={{
+        backgroundImage: `linear-gradient(${theme.gridColor} 1px, transparent 1px), linear-gradient(90deg, ${theme.gridColor} 1px, transparent 1px)`,
+      }} />
+      {children}
+    </div>
+  );
+
+  // ── Render online: pilih create/join ──────────────────────────────────
+  if (onlineMode === 'lobby') {
+    return (
+      <BgWrapper>
+        <OnlineLobbyEntry
+          themeId={theme.id}
+          onRoomReady={handleOnlineRoomReady}
+          onBack={() => setOnlineMode('off')}
+        />
+      </BgWrapper>
+    );
+  }
+
+  // ── Render online: room lobby (tunggu pemain, konfigurasi) ────────────
+  if (onlineMode === 'roomlobby') {
+    return (
+      <BgWrapper>
+        <OnlineRoomLobby
+          roomCode={onlineRoomCode}
+          isHost={onlineIsHost}
+          themeId={theme.id}
+          onGameStarted={handleGameStarted}
+          onLeave={handleOnlineLeave}
+        />
+      </BgWrapper>
+    );
+  }
+
+  // ── Render online: game berlangsung ──────────────────────────────────
+  if (onlineMode === 'game') {
+    return (
+      <BgWrapper>
+        <OnlineGame
+          roomCode={onlineRoomCode}
+          isHost={onlineIsHost}
+          onLeave={handleOnlineLeave}
+        />
+      </BgWrapper>
+    );
+  }
+
+  // ── Render offline / landing ──────────────────────────────────────────
   return (
     <div className="min-h-screen cyber-bg" style={{ background: theme.background }}>
       <div className="scanlines" />
@@ -353,7 +371,11 @@ function AppInner() {
       </div>
 
       {gamePhase === 'landing' && (
-        <LandingPage onStart={startNewGame} onShowLeaderboard={() => setShowLeaderboard(true)} />
+        <LandingPage
+          onStart={startNewGame}
+          onOnline={() => setOnlineMode('lobby')}
+          onShowLeaderboard={() => setShowLeaderboard(true)}
+        />
       )}
       {gamePhase === 'setup' && (
         <GameSetup onComplete={handleSetupComplete} onBack={() => setGamePhase('landing')} savedNames={lastGameConfig?.playerNames} />

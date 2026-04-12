@@ -1,0 +1,31 @@
+type User @table {
+  displayName: String!
+  createdAt: Timestamp!
+  email: String
+  photoUrl: String
+}
+
+type NoTask @table {
+  user: User!
+  title: String!
+  decisionReason: String!
+  createdAt: Timestamp!
+  status: String!
+  notes: String
+  reEvaluateDate: Date
+  category: Category
+}
+
+type Category @table {
+  user: User!
+  name: String!
+  description: String
+}
+
+type AuditLog @table {
+  user: User!
+  noTask: NoTask
+  actionType: String!
+  timestamp: Timestamp!
+  details: String
+}
